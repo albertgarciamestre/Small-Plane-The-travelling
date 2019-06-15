@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework.Constraints;
+
 using UnityEngine;
 using Random = System.Random;
 
 public class IslandScript : MonoBehaviour {
-
     private float townPosZ = 490;
     //private bool Loaded = false;
     public int i = 0;
