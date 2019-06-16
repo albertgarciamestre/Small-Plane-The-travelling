@@ -1,129 +1,217 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
+//using UnityEditor;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+
+/// <summary>
+/// Main Player class that controls the behaviour of the player object
+/// </summary>
+public class PlayerController : MonoBehaviour
 {
     private Camera mainCamera;
     Rigidbody rb;
-    const float minimumSpeed = -1500;
-    const float maxHorizontalSpeed = 250;
+    public float forwardVelocity = 100;
+    public float minimumSpeed = -1500;
+
+    public float maxHorizontalSpeed = 250;
     float currentHorizontalSpeed = 0;
+
+    public float maxVerticalSpeed = 250;
+    private float currentVerticalSpeed = 0;
+
     private float currentRotation = 0;
     private Vector3 currentAngle;
-
+    public float leftBorderLimitX = 150;
+    public float rightBorderLimitX = 350;
+    public float verticalUpperLimit = 100;
+    public float verticalLowerLimit = 20;
     //float maxHorizontalSpeed = 5000;
-    float bonusHorizontalSpeed = 0;
-    float boostHorizontalSpeed = 0;
-    private bool FirstPersonView = false;
- 
+    public float bonusHorizontalSpeed = 0;
+    public float boostHorizontalSpeed = 0;
 
-    // Use this for initialization
+    private float screenCenterX;
+
+    public bool moving = false;
+
+    /// <summary>
+    /// Initialises the class
+    /// </summary>
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        rb.isKinematic = true;
         currentAngle = rb.transform.eulerAngles;
-        
-       //Animator anim = GetComponent<Animator>();
-       
-       //anim.enabled = true;
-       //anim["NewTakeOff"].wrapMode = WrapMode.Once;
-       //anim.Play("NewTakeOff");
-        //anim.enabled = false;
-       // InvokeRepeating("spawnTerrain", 0, 0.5f);
+        screenCenterX = Screen.width * 0.5f;
         mainCamera = Camera.main;
-
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
     }
 
-    // Update is called once per frame
-	void Update () {
 
-	    rb.AddRelativeForce(Vector3.forward * 5 * Time.deltaTime * 70);
-
-	    if (Input.GetKey(KeyCode.A))
-	    {
-            //transform.Rotate(0, 0, Time.deltaTime * 50);
-            //currentRotation = Mathf.Lerp(45,currentRotation, Time.deltaTime * 50 );
-
-	        currentAngle = new Vector3(
-	            Mathf.LerpAngle(currentAngle.x, 0, Time.deltaTime),
-	            Mathf.LerpAngle(currentAngle.y, 0, Time.deltaTime),
-	            Mathf.LerpAngle(currentAngle.z, 30, Time.deltaTime));
-
-            currentHorizontalSpeed = Mathf.Lerp(currentHorizontalSpeed, -maxHorizontalSpeed + -bonusHorizontalSpeed + -boostHorizontalSpeed, Time.deltaTime );
-            
-	    }
-
-        if (Input.GetKey(KeyCode.D))
-	    {
-            // transform.Rotate(0,0,-Time.deltaTime * 50);
-	        currentAngle = new Vector3(
-	            Mathf.LerpAngle(currentAngle.x, 0, Time.deltaTime),
-	            Mathf.LerpAngle(currentAngle.y, 0, Time.deltaTime),
-	            Mathf.LerpAngle(currentAngle.z, -30, Time.deltaTime));
-
-            currentHorizontalSpeed = Mathf.Lerp(currentHorizontalSpeed, maxHorizontalSpeed + bonusHorizontalSpeed + boostHorizontalSpeed, Time.deltaTime );
-        }
-
-	    if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
-	    {
-	        currentHorizontalSpeed = Mathf.Lerp(currentHorizontalSpeed, 0, Time.deltaTime / 0.1f);
-            // currentRotation = Mathf.Lerp(0, rb.rotation.z, Time.deltaTime * 50);
-	        currentAngle = new Vector3(
-	            Mathf.LerpAngle(currentAngle.x, 0, Time.deltaTime),
-	            Mathf.LerpAngle(currentAngle.y, 0, Time.deltaTime),
-	            Mathf.LerpAngle(currentAngle.z, 0, Time.deltaTime * 2));
-        }
-
-	    if (Input.GetKey((KeyCode.C)))
-	    {
-	        if (FirstPersonView)
-	        {
-	            mainCamera.transform.localPosition = new Vector3(0, 16.4f, -45.5f);
-	            FirstPersonView = false;
-	        }
-	        else
-	        {
-	            mainCamera.transform.localPosition = new Vector3(0, 2.1f, 3.5f);
-	            FirstPersonView = true;
-	        }
-	         
-	    }
-        
-	    if (transform.position.x < 150)
-	    {
-	        transform.position = new Vector3(150, transform.position.y, transform.position.z);
-	        currentHorizontalSpeed = 0;
-	        currentAngle = new Vector3(
-	            Mathf.LerpAngle(currentAngle.x, 0, Time.deltaTime),
-	            Mathf.LerpAngle(currentAngle.y, 0, Time.deltaTime),
-	            Mathf.LerpAngle(currentAngle.z, 0, Time.deltaTime * 2));
-            Input.ResetInputAxes();
-             
-        }
-
-	    if (transform.position.x > 350)
-	    {
-	        transform.position = new Vector3(350, transform.position.y, transform.position.z);
-	        currentHorizontalSpeed = 0;
-	        currentAngle = new Vector3(
-	            Mathf.LerpAngle(currentAngle.x, 0, Time.deltaTime),
-	            Mathf.LerpAngle(currentAngle.y, 0, Time.deltaTime),
-	            Mathf.LerpAngle(currentAngle.z, 0, Time.deltaTime * 2));
-            Input.ResetInputAxes();
-        }
-        
-
-	    rb.velocity = new Vector3(currentHorizontalSpeed, rb.velocity.y, rb.velocity.z);
-        //rb.rotation = new Quaternion(rb.rotation.x, rb.rotation.y, currentRotation, rb.rotation.w);
-        //rb.rotation.Set(rb.rotation.x, rb.rotation.y, 45, rb.rotation.w);
-	    rb.transform.eulerAngles = currentAngle;
-
-
+    void DebugCode()
+    {
+        //Debug.Log(rb.velocity);
     }
 
-    
+    /// <summary>
+    /// Called every frame update of the game
+    /// </summary>
+    void Update()
+    {
+        DebugCode();
+        if (moving)
+        {
+            if (Input.GetKey(KeyCode.A))
+            {
+                moveLeft();
+            }
+
+            if (Input.GetKey(KeyCode.D))
+            {
+                moveRight();
+            }
+
+            if (Input.GetKey(KeyCode.W))
+            {
+                moveUp();
+            }
+
+            if (Input.GetKey(KeyCode.S))
+            {
+                moveDown();
+            }
+
+            if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
+            {
+                currentHorizontalSpeed = Mathf.Lerp(currentHorizontalSpeed, 0, Time.deltaTime / 0.1f);
+                currentAngle = new Vector3(
+                    Mathf.LerpAngle(currentAngle.x, 0, Time.deltaTime),
+                    Mathf.LerpAngle(currentAngle.y, 0, Time.deltaTime),
+                    Mathf.LerpAngle(currentAngle.z, 0, Time.deltaTime * 2));
+            }
+
+            if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
+            {
+                currentVerticalSpeed = Mathf.Lerp(currentVerticalSpeed, 0, Time.deltaTime / 0.1f);
+            }
+
+            if (transform.position.y > verticalUpperLimit)
+            {
+                transform.position = new Vector3(transform.position.x, verticalUpperLimit - 1, transform.position.z);
+                currentVerticalSpeed = 0;
+            }
+
+            if (transform.position.y < verticalLowerLimit)
+            {
+                transform.position = new Vector3(transform.position.x, verticalLowerLimit + 1, transform.position.z);
+                currentVerticalSpeed = 0;
+            }
+
+            if (transform.position.x < leftBorderLimitX)
+            {
+                transform.position = new Vector3(leftBorderLimitX + 1, transform.position.y, transform.position.z);
+                currentHorizontalSpeed = 0;
+                currentAngle = new Vector3(
+                    Mathf.LerpAngle(currentAngle.x, 0, Time.deltaTime),
+                    Mathf.LerpAngle(currentAngle.y, 0, Time.deltaTime),
+                    Mathf.LerpAngle(currentAngle.z, 0, Time.deltaTime * 2));
+                Input.ResetInputAxes();
+
+            }
+
+            if (transform.position.x > rightBorderLimitX)
+            {
+                transform.position = new Vector3(rightBorderLimitX - 1, transform.position.y, transform.position.z);
+                currentHorizontalSpeed = 0;
+                currentAngle = new Vector3(
+                    Mathf.LerpAngle(currentAngle.x, 0, Time.deltaTime),
+                    Mathf.LerpAngle(currentAngle.y, 0, Time.deltaTime),
+                    Mathf.LerpAngle(currentAngle.z, 0, Time.deltaTime * 2));
+                Input.ResetInputAxes();
+            }
+
+
+
+
+            if (Input.acceleration.x < 0.19)
+            {
+                moveLeft();
+            }
+
+            if (Input.acceleration.x > -0.19)
+            {
+                moveRight();
+            }
+        }
+    }
+
+
+    /// Called Every Physics step
+
+    void FixedUpdate()
+    {
+        if (moving)
+        {
+            rb.AddRelativeForce(Vector3.forward * Time.deltaTime * forwardVelocity);
+            rb.velocity = new Vector3(currentHorizontalSpeed, currentVerticalSpeed, rb.velocity.z);
+            rb.transform.eulerAngles = currentAngle;
+        }
+    }
+
+
+    /// Controls behaviour of object moving to the right
+
+    void moveRight()
+    {
+        currentAngle = new Vector3(
+            Mathf.LerpAngle(currentAngle.x, 0, Time.deltaTime),
+            Mathf.LerpAngle(currentAngle.y, 0, Time.deltaTime),
+            Mathf.LerpAngle(currentAngle.z, -70, Time.deltaTime));
+        currentHorizontalSpeed = Mathf.Lerp(currentHorizontalSpeed, maxHorizontalSpeed + bonusHorizontalSpeed + boostHorizontalSpeed, Time.deltaTime);
+    }
+
+
+    /// Controls behaviour of object moving to the left
+
+    void moveLeft()
+    {
+        currentAngle = new Vector3(
+            Mathf.LerpAngle(currentAngle.x, 0, Time.deltaTime),
+            Mathf.LerpAngle(currentAngle.y, 0, Time.deltaTime),
+            Mathf.LerpAngle(currentAngle.z, 70, Time.deltaTime));
+        currentHorizontalSpeed = Mathf.Lerp(currentHorizontalSpeed, -maxHorizontalSpeed + -bonusHorizontalSpeed + -boostHorizontalSpeed, Time.deltaTime);
+    }
+
+    void moveUp()
+    {
+        currentVerticalSpeed = Mathf.Lerp(currentVerticalSpeed, +maxVerticalSpeed, Time.deltaTime);
+    }
+
+    void moveDown()
+    {
+        currentVerticalSpeed = Mathf.Lerp(currentVerticalSpeed, -maxVerticalSpeed, Time.deltaTime);
+    }
+
+
+    /// Called to enable movement of plane
+
+    public void EnableMovement()
+    {
+        rb.isKinematic = false;
+        rb.velocity = new Vector3(0, 0, 20);
+        moving = true;
+        GetComponent<PlayerController>().enabled = true;
+    }
+
+    public void TakeOffAnim()
+    {
+        Animation anim = GetComponent<Animation>();
+        anim.Play("TakeOff");
+    }
 
 }
+
+
+
+
