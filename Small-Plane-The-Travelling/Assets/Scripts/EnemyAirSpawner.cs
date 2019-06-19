@@ -3,88 +3,87 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = System.Random;
 
-public class EnemyAirSpawner : MonoBehaviour {
+public class EnemyAirSpawner : MonoBehaviour, IPausable {
 
     Random rnd = new System.Random();
     public GameObject player;
-    float leftBorderLimitX;
-    float rightBorderLimitX;
-    float verticalLowerLimit;
-    float verticalUpperLimit;
+    private float leftBorderLimitX;
+    private float rightBorderLimitX;
+    private float verticalLowerLimit;
+    private float verticalUpperLimit;
 
     public float planeYSpawnPos = 90;
+    public bool continueSpawning = false;
+    public static float waitTime = 10;
+    private WaitForSeconds waitForSeconds = new WaitForSeconds(waitTime);
 
 	// Use this for initialization
-	void Start () {
-        StartPlaneSpawning();
-
+	void Start ()
+    { 
         PlayerController p = player.GetComponent<PlayerController>();
         leftBorderLimitX = p.leftBorderLimitX;
         rightBorderLimitX = p.rightBorderLimitX;
         verticalLowerLimit = p.verticalLowerLimit;
         verticalUpperLimit = p.verticalUpperLimit;
 	}
-	
-	// Update is called once per frame
+
+    private void OnEnable()
+    {
+        GameStateManager.loadGameStartComponents += Resume;
+        GameStateManager.pauseGame += Pause;
+        
+    }
+
+    private void OnDisable()
+    {
+        GameStateManager.loadGameStartComponents -= Resume;
+        GameStateManager.pauseGame -= Pause;
+    }
+
+    // Update is called once per frame
 	void Update () {
 		
 	}
 
-    /// Invokes an event that repeats and runs the specified method over and over in specified time frame
-
-    private void StartPlaneSpawning()
+    private IEnumerator SpawnEnemyPlane()
     {
-        InvokeRepeating("SpawnEnemyPlane",10f,15f);
-    }
-
-    /// Stops all invokes on current script
- 
-    private void StopPlaneSpawning()
-    {
-        CancelInvoke();
-    }
-
-
-    /// Decides which type of plane to spawn, and which pattern to spawn
-
-    private void SpawnEnemyPlane()
-    {
-        int planeChoice = rnd.Next(0, 3);
-        string typeOfPlane = "";
-
-        if (planeChoice == 0)
+        while (continueSpawning)
         {
-            typeOfPlane = "plane";
-        }
-        else if (planeChoice == 1)
-        {
-            typeOfPlane = "bomber";
-        }
-        else if (planeChoice == 2)
-        {
-            typeOfPlane = "warplane";
-        }
+            int planeChoice = rnd.Next(0, 3);
+            string typeOfPlane = "";
 
-        int typeOfSpawn = rnd.Next(0,3);
-        
-        if (typeOfSpawn == 0)
-        {
-            spawnSingle(typeOfPlane);
-        }
-        else if (typeOfSpawn == 1)
-        {
-            spawnDouble(typeOfPlane);
-        }
-        else if(typeOfSpawn == 2)
-        {
-            spawnTriple("warplane");
+            if (planeChoice == 0)
+            {
+                typeOfPlane = "plane";
+            }
+            else if (planeChoice == 1)
+            {
+                typeOfPlane = "bomber";
+            }
+            else if (planeChoice == 2)
+            {
+                typeOfPlane = "warplane";
+            }
+
+            int typeOfSpawn = rnd.Next(0, 3);
+
+            if (typeOfSpawn == 0)
+            {
+                spawnSingle(typeOfPlane);
+            }
+            else if (typeOfSpawn == 1)
+            {
+                spawnDouble(typeOfPlane);
+            }
+            
+
+            yield return waitForSeconds;
         }
     }
 
 
- 
     /// Spawns a plane at players position x in gameworld
-    /// </summary>
+
     /// <param name="typeOfPlane"></param>
     private void spawnSingle(string typeOfPlane)
     {
@@ -98,7 +97,6 @@ public class EnemyAirSpawner : MonoBehaviour {
 
 
     /// Spawns 2 planes at two different modes
-    /// </summary>
     /// <param name="typeOfPlane"></param>
     private void spawnDouble(string typeOfPlane)
     {
@@ -157,9 +155,8 @@ public class EnemyAirSpawner : MonoBehaviour {
     }
 
 
-    /// <summary>
+
     /// Spawns 3 planes
-    /// </summary>
     /// <param name="typeOfPlane"></param>
     private void spawnTriple(string typeOfPlane)
     {
@@ -186,5 +183,45 @@ public class EnemyAirSpawner : MonoBehaviour {
         planes[2].transform.position = new Vector3(planeOneX - sideBySideOffset, planeYSpawnPos, player.transform.position.z + 4100);
         planes[2].GetComponent<Rigidbody>().velocity = new Vector3(0, 0, -300);
 
+    }
+
+    private void DisablePlanesMovement()
+    {
+        List<GameObject> planes = GameObjectPool.current.GetPooledEnemyAirPool();
+
+        foreach(var plane in planes)
+        {
+            if (plane.activeInHierarchy)
+            {
+                plane.GetComponent<Rigidbody>().velocity = new Vector3(0,0,0);
+            }
+        }
+    }
+
+    private void ResumeAllPlaneMovement()
+    {
+        List<GameObject> planes = GameObjectPool.current.GetPooledEnemyAirPool();
+
+        foreach (var plane in planes)
+        {
+            if (plane.activeInHierarchy)
+            {
+                plane.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, -300);
+            }
+        }
+    }
+
+    public void Pause()
+    {
+        continueSpawning = false;
+        StopCoroutine(SpawnEnemyPlane());
+        DisablePlanesMovement();
+    }
+
+    public void Resume()
+    {
+        continueSpawning = true;
+        StartCoroutine(SpawnEnemyPlane());
+        ResumeAllPlaneMovement();
     }
 }

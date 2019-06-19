@@ -100,18 +100,23 @@ namespace UnityStandardAssets.Water
                 reflectionCamera.projectionMatrix = cam.CalculateObliqueMatrix(clipPlane);
 
 				// Set custom culling matrix from the current camera
-				reflectionCamera.cullingMatrix = cam.projectionMatrix * cam.worldToCameraMatrix;
+                
+                /*
+				////////reflectionCamera.cullingMatrix = cam.projectionMatrix * cam.worldToCameraMatrix;
+                TURNED OFF CULLING MY OWN EDIT
+				/////////reflectionCamera.cullingMask = ~(1 << 4) & reflectLayers.value; // never render water layer
+                */
 
-				reflectionCamera.cullingMask = ~(1 << 4) & reflectLayers.value; // never render water layer
                 reflectionCamera.targetTexture = m_ReflectionTexture;
-                bool oldCulling = GL.invertCulling;
-                GL.invertCulling = !oldCulling;
+                //bool oldCulling = GL.invertCulling;
+                //GL.invertCulling = !oldCulling;
                 reflectionCamera.transform.position = newpos;
                 Vector3 euler = cam.transform.eulerAngles;
                 reflectionCamera.transform.eulerAngles = new Vector3(-euler.x, euler.y, euler.z);
                 reflectionCamera.Render();
                 reflectionCamera.transform.position = oldpos;
-                GL.invertCulling = oldCulling;
+                //GL.invertCulling = oldCulling;
+                reflectionCamera.useOcclusionCulling = false;
                 GetComponent<Renderer>().sharedMaterial.SetTexture("_ReflectionTex", m_ReflectionTexture);
             }
 

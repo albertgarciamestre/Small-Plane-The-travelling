@@ -33,17 +33,17 @@ public class SkyBoxConfig : MonoBehaviour {
         }
     }
 
-
+    /// <summary>
     /// Disabled Skybox rotation
-
+    /// </summary>
     private void RotationDisabled()
     {
         rotationEnabled = false;
     }
 
-
+    /// <summary>
     /// Enables SkyBox rotation
-
+    /// </summary>
     private void RotationEnabled()
     {
         rotationEnabled = true;

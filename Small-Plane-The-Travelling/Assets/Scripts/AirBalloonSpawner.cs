@@ -28,9 +28,8 @@ public class AirBalloonSpawner : MonoBehaviour,IPausable {
 		StartCoroutine(SpawnBalloons());
 	}
 
-	/// <summary>
 	/// Disables all pick ups from spawning
-	/// </summary>
+    /// 
 	private void DisablePickUpSpawning()
 	{
 		StopAllCoroutines();
