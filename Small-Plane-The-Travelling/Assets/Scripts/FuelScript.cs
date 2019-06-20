@@ -14,14 +14,6 @@ public class FuelScript : MonoBehaviour, IPickUp {
         transform.Rotate(0,0,0.7f);
 	}
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "player")
-        {
-            PickUpInteraction(other);
-        }
-    }
-
     public void PickUpInteraction(Collider other)
     {   
         other.GetComponent<PlayerStats>().modifyFuelBy(30);   
@@ -31,5 +23,12 @@ public class FuelScript : MonoBehaviour, IPickUp {
     public void PickUpDestroy()
     {
        gameObject.SetActive(false);
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "player")
+        {
+            PickUpInteraction(other);
+        }
     }
 }
