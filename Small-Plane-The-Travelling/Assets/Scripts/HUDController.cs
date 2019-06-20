@@ -36,9 +36,7 @@ public class HUDController : MonoBehaviour {
 		
 	}
 
-    /// <summary>
-    /// Called on pause button press on HUD, calls the pauseGame method in the GameStateManager
-    /// </summary>
+  
     public void PauseGame()
     {
         GameStateManager.current.PauseGame();
@@ -56,17 +54,13 @@ public class HUDController : MonoBehaviour {
         SceneManager.LoadScene("MainGame");
     }
 
-    /// <summary>
-    /// Enables HUD rendering
-    /// </summary>
+    
     private void EnableHUDRender()
     {
         GetComponent<Canvas>().enabled = true;
     }
 
-    /// <summary>
-    /// Disables HUD Rendering
-    /// </summary>
+
     private void DisableHUDRender()
     {
         GetComponent<Canvas>().enabled = false;

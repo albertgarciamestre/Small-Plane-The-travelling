@@ -14,36 +14,33 @@ public class MainCamera : MonoBehaviour
     public float cameraTilt = 10;
     private bool cameraEndScreen = false;
 
-    /// <summary>
     /// Used to initialise curretn class
-    /// </summary>
+
     void Start ()
     {
         currentAngle = transform.eulerAngles;
         transform.position = cameraMenuPosition;
     }
 
-    /// <summary>
+
     /// Called when this script is enabled
-    /// </summary>
+
     private void OnEnable()
     {
         GameStateManager.startGame += StartGame;
         GameStateManager.gameOver += CameraMoveGameOver;
     }
 
-    /// <summary>
+
     /// Called when this script is enabled
-    /// </summary>
+
     private void OnDisable()
     {
         GameStateManager.startGame -= StartGame;
         GameStateManager.gameOver -= CameraMoveGameOver;
     }
 
-    /// <summary>
-    /// Called once per frame
-    /// </summary>
+
     void Update () {
 
 	    if (Input.GetKeyDown(KeyCode.E))
@@ -53,9 +50,7 @@ public class MainCamera : MonoBehaviour
 
 	}
 
-    /// <summary>
-    /// Called every physics frame updated
-    /// </summary>
+
     void LateUpdate()
     {
         if (gameStarted)
@@ -87,9 +82,6 @@ public class MainCamera : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Called when camera is switched
-    /// </summary>
     void switchCamera()
     {
         if (cameraType == 0)
@@ -102,17 +94,12 @@ public class MainCamera : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Called by event to start the camera movement
-    /// </summary>
     public void StartGame()
     {
         gameStarted = true;
     }
 
-    /// <summary>
-    /// Lerps the camera from the MainMenuPosition to player follow position
-    /// </summary>
+   
     private void LerpCameraToGameStart()
     {
         transform.position = new Vector3(Mathf.Lerp(transform.position.x, Player.transform.position.x, Time.deltaTime/1.5f),

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-[ExecuteInEditMode] // Make water live-update even when not in play mode
+[ExecuteInEditMode] 
 public class Water_occlusion : MonoBehaviour
 {
 	public enum WaterMode {
@@ -223,9 +223,7 @@ public class Water_occlusion : MonoBehaviour
 				mysky.material = sky.material;
 			}
 		}
-		// update other values to match current camera.
-		// even if we are supplying custom camera&projection matrices,
-		// some of values are used elsewhere (e.g. skybox uses far plane)
+	
 		dest.farClipPlane = src.farClipPlane;
 		dest.nearClipPlane = src.nearClipPlane;
 		dest.orthographic = src.orthographic;

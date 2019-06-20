@@ -9,16 +9,20 @@ public class MainMenu : MonoBehaviour {
     /// 
     /// </summary>
     void Start () {
-		
+        if (Input.GetKey(KeyCode.Space))
+        {
+            SceneManager.LoadScene("Scenes/MainGame");
+        }
 	}
-
-    /// <summary>
-    /// Called when start game button is pressed and loads maingame scene
-    /// </summary>
-    public void PlayGame()
+    void Update()
     {
-        SceneManager.LoadScene("Scenes/MainGame");
+        if (Input.GetKey(KeyCode.Space))
+        {
+            SceneManager.LoadScene("Scenes/MainGame");
+        }
     }
+
+
 
     /// <summary>
     /// Called when quit game button is pressed and quits application

@@ -35,17 +35,13 @@ public class ScenerySpawner : MonoBehaviour {
         playerPosition = player.transform.position;
 	}
 
-    /// <summary>
-    /// Calls methods to spawn next sceneryblock
-    /// </summary>
+  
     private void SpawnNextSceneryBlock()
     {
         SpawnNextIsland();
     }
 
-    /// <summary>
-    /// Spawns next island
-    /// </summary>
+
     private void SpawnNextIsland()
     {
         Random rnd = new Random();

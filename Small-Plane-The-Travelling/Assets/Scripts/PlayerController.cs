@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-/// <summary>
-/// Main Player class that controls the behaviour of the player object
-/// </summary>
+
 public class PlayerController : MonoBehaviour, IPausable
 {
     private Camera mainCamera;
@@ -42,9 +40,7 @@ public class PlayerController : MonoBehaviour, IPausable
     private float speedBoostTimer = 0;
 
 
-    /// <summary>
-    /// Called when this script is enabled
-    /// </summary>
+   
     private void OnEnable()
     {
         GameStateManager.loadGameStartComponents += TakeOffAnim;
@@ -52,9 +48,7 @@ public class PlayerController : MonoBehaviour, IPausable
         GameStateManager.resumeGame += Resume;
     }
 
-    /// <summary>
-    /// Called when this script is disabled
-    /// </summary>
+
     private void OnDisable()
     {
         GameStateManager.loadGameStartComponents -= TakeOffAnim;
@@ -62,9 +56,7 @@ public class PlayerController : MonoBehaviour, IPausable
         GameStateManager.resumeGame -= Resume;
     }
 
-    /// <summary>
-    /// Initialises the class
-    /// </summary>
+  
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -76,17 +68,11 @@ public class PlayerController : MonoBehaviour, IPausable
         storedVelocity = new Vector3(0, 0, startSpeed);
     }
 
-    /// <summary>
-    /// Used to log information in console
-    /// </summary>
     void DebugCode()
     {
         //Debug.Log(rb.velocity);
     }
 
-    /// <summary>
-    /// Called every frame update of the game
-    /// </summary>
     void Update()
     {
         DebugCode();
@@ -165,9 +151,7 @@ public class PlayerController : MonoBehaviour, IPausable
         }
     }
 
-    /// <summary>
-    /// Runs the calculation for player's speed boost
-    /// </summary>
+  
     private void BoostPlayerSpeed()
     {
         speedBoostTimer += Time.deltaTime;
@@ -184,9 +168,7 @@ public class PlayerController : MonoBehaviour, IPausable
             Resume();
         }
     }
-    /// <summary>
-    /// Controls behaviour of object moving to the right
-    /// </summary>
+ 
     void moveRight()
     {
         currentAngle = new Vector3(
@@ -196,9 +178,7 @@ public class PlayerController : MonoBehaviour, IPausable
         currentHorizontalSpeed = Mathf.Lerp(currentHorizontalSpeed, maxHorizontalSpeed + bonusHorizontalSpeed + boostHorizontalSpeed, Time.deltaTime);
     }
 
-    /// <summary>
-    /// Controls behaviour of object moving to the left
-    /// </summary>
+  
     void moveLeft()
     {
         currentAngle = new Vector3(
@@ -247,9 +227,7 @@ public class PlayerController : MonoBehaviour, IPausable
             currentVerticalSpeed = Mathf.Lerp(currentVerticalSpeed, 0, Time.deltaTime / 0.1f);
         }
     }
-    /// <summary>
-    ///Contains code for checking if player is in the game movement bounds 
-    /// </summary>
+    
     private void CheckPlayerBorders()
     {
         
@@ -291,9 +269,6 @@ public class PlayerController : MonoBehaviour, IPausable
         }
     }
 
-    /// <summary>
-    /// Contains code for all keyboard input relating to player control
-    /// </summary>
     private void KeyBoardInput()
     {
         if (Input.GetKey(KeyCode.A))

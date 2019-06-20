@@ -19,17 +19,13 @@ public class GameObjectPool : MonoBehaviour
 	private List<GameObject> balloonPool;
     private static Random rnd = new Random();
 
-    /// <summary>
-    /// Called on awake of the scene, instantiates itself as a static class
-    /// </summary>
+  
     public void Awake()
     {
         current = this;
     }
 
-    /// <summary>
-    /// Initialises the current class
-    /// </summary>
+   
 	void Start ()
 	{
         islandPool = new List<GameObject>();
@@ -135,9 +131,7 @@ public class GameObjectPool : MonoBehaviour
 		}
     }
 	
-    /// <summary>
-    /// Called when an island is needed
-    /// </summary>
+  
     /// <param name="desiredObj"></param>
     /// <returns>An island from the island pool</returns>
     public GameObject GetPooledIsland(string desiredObj)
@@ -147,9 +141,7 @@ public class GameObjectPool : MonoBehaviour
         return island;
     }
 
-    /// <summary>
-    /// Called when a ring is needed
-    /// </summary>
+
     /// <param name="desiredObj"></param>
     /// <returns>A ring from the ring pool</returns>
     public GameObject GetPooledRing(string desiredObj)
@@ -166,9 +158,7 @@ public class GameObjectPool : MonoBehaviour
         return null;
     }
 
-    /// <summary>
-    /// Called when a ship is needed
-    /// </summary>
+   
     /// <param name="index"></param>
     /// <returns><see langword="abstract"/>ship from the ship pool</returns>
     public GameObject GetPooledShip(int index)
