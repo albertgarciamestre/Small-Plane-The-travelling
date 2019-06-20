@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ScoreBoosterScript : MonoBehaviour, IPickUp {
-
+    public int count = 0;
     void Start()
     {
 
@@ -27,6 +27,10 @@ public class ScoreBoosterScript : MonoBehaviour, IPickUp {
     {
         other.GetComponent<PlayerStats>().increaseScoreBy(50);
         PickUpDestroy();
+        count++;
+        if (count == 3) {
+            GameStateManager.current.GameOver();
+        }
     }
 
     public void PickUpDestroy()
