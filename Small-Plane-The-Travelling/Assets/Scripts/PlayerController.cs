@@ -8,6 +8,15 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour, IPausable
 {
+    enum Looping
+    {
+        NONE,
+        LEFT,
+        RIGHT
+    }
+
+    public PlayerStats playerStats;
+
     private Camera mainCamera;
     Rigidbody rb;
     public float forwardVelocity = 100;
@@ -39,8 +48,18 @@ public class PlayerController : MonoBehaviour, IPausable
     private float speedBoostTimeout = 0;
     private float speedBoostTimer = 0;
 
+    Looping loopingState = Looping.NONE;
+    float loopingSpeed = 360f;
+    float loopingAmount = 0f;
+    Vector3 loopingVector = Vector3.zero;
+    Vector3 loopingMovingVector = Vector3.zero;
+    Looping nextLoopingState = Looping.NONE;
+    float loopingMovementAmount = 50f;
 
-   
+    int combo = 0;
+
+
+
     private void OnEnable()
     {
         GameStateManager.loadGameStartComponents += TakeOffAnim;
@@ -72,7 +91,7 @@ public class PlayerController : MonoBehaviour, IPausable
     {
         //Debug.Log(rb.velocity);
     }
-
+    
     void Update()
     {
         DebugCode();
@@ -82,6 +101,48 @@ public class PlayerController : MonoBehaviour, IPausable
             CheckPlayerBorders();
             CheckControlInput();
             KeyBoardInput();
+
+            if (loopingState != Looping.NONE && loopingAmount < 360f)
+            {
+                loopingAmount += loopingSpeed * Time.deltaTime;
+
+                Vector3 dir = Vector3.zero;
+                Vector3 movingDir = Vector3.zero;
+
+                switch (loopingState)
+                {
+                    case Looping.LEFT:
+                        dir = Vector3.forward;
+                        movingDir = Vector3.left;
+
+                        break;
+                    case Looping.RIGHT:
+                        dir = Vector3.back;
+                        movingDir = Vector3.right;
+                        break;
+                }
+
+                loopingVector += dir * Time.deltaTime * loopingSpeed;
+                loopingMovingVector = movingDir * loopingMovementAmount;
+            }
+            else if (loopingState != Looping.NONE)
+            {
+                if (nextLoopingState != Looping.NONE)
+                {
+                    combo++;
+                }
+                else
+                {
+                    playerStats.ComboFinished(combo);
+                    combo = 0;
+                }
+
+                loopingState = nextLoopingState;
+                loopingAmount = 0f;
+                loopingVector = Vector3.zero;
+                loopingMovingVector = Vector3.zero;
+                nextLoopingState = Looping.NONE;
+            }
 
             //Touchscreen Controls
             foreach (Touch touch in Input.touches)
@@ -93,7 +154,7 @@ public class PlayerController : MonoBehaviour, IPausable
                 else if (touch.position.x > Screen.width / 2)
                 {
                     moveRight();
-
+              
                 }
 
             }
@@ -146,8 +207,8 @@ public class PlayerController : MonoBehaviour, IPausable
                 BoostPlayerSpeed();
             }
 
-            rb.velocity = new Vector3(currentHorizontalSpeed, currentVerticalSpeed, rb.velocity.z);
-            rb.transform.eulerAngles = currentAngle;
+            rb.velocity = new Vector3(currentHorizontalSpeed, currentVerticalSpeed, rb.velocity.z) + loopingMovingVector;
+            rb.transform.eulerAngles = currentAngle + loopingVector;
         }
     }
 
@@ -271,24 +332,50 @@ public class PlayerController : MonoBehaviour, IPausable
 
     private void KeyBoardInput()
     {
-        if (Input.GetKey(KeyCode.A))
+        if (loopingState == Looping.NONE)
         {
-            moveLeft();
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                loopingState = Looping.LEFT;
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                loopingState = Looping.RIGHT;
+            }
+        }
+        else if (nextLoopingState == Looping.NONE)
+        {
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                nextLoopingState = Looping.LEFT;
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                nextLoopingState = Looping.RIGHT;
+            }
         }
 
-        if (Input.GetKey(KeyCode.D))
+        if (loopingState == Looping.NONE)
         {
-            moveRight();
-        }
+            if (Input.GetKey(KeyCode.A))
+            {
+                moveLeft();
+            }
 
-        if (Input.GetKey(KeyCode.W))
-        {
-            moveUp();
-        }
+            if (Input.GetKey(KeyCode.D))
+            {
+                moveRight();
+            }
 
-        if (Input.GetKey(KeyCode.S))
-        {
-            moveDown();
+            if (Input.GetKey(KeyCode.W))
+            {
+                moveUp();
+            }
+
+            if (Input.GetKey(KeyCode.S))
+            {
+                moveDown();
+            }
         }
     }
 

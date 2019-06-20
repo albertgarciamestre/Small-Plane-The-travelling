@@ -12,6 +12,7 @@ public class PlayerStats : MonoBehaviour {
     private bool scoreEnabled = false;
     private float timer = 0;
     private float timeout = 0.2f;
+    private int comboScore = 100;
 
     private bool scoreIsMultiplied = false;
     private int scoreMultiplier = 1;
@@ -166,5 +167,10 @@ public class PlayerStats : MonoBehaviour {
     public int GetScore()
     {
         return score;
+    }
+
+    public void ComboFinished(int numCombos)
+    {
+        score += numCombos * comboScore;
     }
 }

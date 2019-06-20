@@ -28,7 +28,7 @@ public class ScoreBoosterScript : MonoBehaviour, IPickUp {
         other.GetComponent<PlayerStats>().increaseScoreBy(50);
         PickUpDestroy();
         count++;
-        if (count == 3) {
+        if (count == 29) {
             GameStateManager.current.GameOver();
         }
     }
